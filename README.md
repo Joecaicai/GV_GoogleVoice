@@ -1,5 +1,7 @@
 ## Google Voice 保号/自动发送及回复信息
 
+https://www.moeelf.com/archives/4.html
+
 ### 一、自动发送信息
 
 1、注册登录 [IFTTT](https://ifttt.com)       然后使用[保号程序](https://ifttt.com/applets/SMGSYPzw-google-voice)   使用此保号程序可以与第二步兼容，也可以忽略第二步
@@ -39,31 +41,40 @@ function autoReplier() {
   var messagecount;
   var sender;
   var num = 9;  //设置连续自动回复邮件的次数（为防止两人都是自动回复，当发送次数达到 9 时将不自动回复）。
-  var hours = 12;  //如果自动回复次数超过了上面设置的值，过了多少小时后又可以自动回复。
+  var hours = 12;  //过了多少小时后又可以自动回复。
     
-  for (var gg = 0; gg < labelObj.getUnreadCount(); gg++) {
-    gmailThreads = labelObj.getThreads()[gg];
-    messages = gmailThreads.getMessages();
-    messagecount = gmailThreads.getMessageCount();
-    for (var ii = 0; ii < messages.length; ii++) {
+  try {
+    for (var gg = 0; gg < labelObj.getUnreadCount(); gg++) {
+      gmailThreads = labelObj.getThreads()[gg];
+      messages = gmailThreads.getMessages();
+      messagecount = gmailThreads.getMessageCount();
+      //console.log(messages[messagecount - 9].getDate() + "  time");
+      for (var ii = 0; ii < messages.length; ii++) {
       
-      if (messages[ii].isUnread()) {
+        if (messages[ii].isUnread()) {
         
-        msg = messages[ii].getPlainBody();
-        sender = messages[ii].getFrom(); 
- 
-        if (messagecount < num){
-          MailApp.sendEmail(sender, "Auto Reply", "Hi, 您好！这是一条自动回复短信！本短信由 Google Apps Script 自动发出。");
-        }else if( (messages[messagecount - 1].getDate().getTime() - messages[messagecount - num].getDate().getTime()) > hours * 60 * 60 * 1000 ){
-          MailApp.sendEmail(sender, "Auto Reply", "Hi, 您好！这是一条自动回复短信！本短信由 Google Apps Script 自动发出。");
+          msg = messages[ii].getPlainBody();
+          sender = messages[ii].getFrom(); 
+        
+          array = [["最灵繁的人也看不见自己的背脊。——非洲"],["最困难的事情就是认识自己。——希腊"],["有勇气承担命运这才是英雄好汉。——黑塞"],["阅读使人充实，会谈使人敏捷，写作使人精确。——培根"],["自知之明是最难得的知识。——西班牙"],["有时候读书是一种巧妙地避开思考的方法。——赫尔普斯"],["越是无能的人，越喜欢挑剔别人的错儿。——爱尔兰"],["一个人即使已登上顶峰，也仍要自强不息。——罗素·贝克"],["最大的挑战和突破在于用人，而用人最大的突破在于信任人。——马云"]];
+          var j = Math.floor(Math.random() * (array.length));
+          var temp = array[j];
+        
+          if (messagecount < num){
+            MailApp.sendEmail(sender, "Auto Reply", temp);
+          }else if( (messages[messagecount - 1].getDate().getTime() - messages[messagecount - num].getDate().getTime()) > hours * 60 * 60 * 1000 ){
+            MailApp.sendEmail(sender, "Auto Reply", "Hi, 您好！我们已经发了好几条信息了，可以停下来休息休息一下了！本短信由 Google Apps Script 自动发出。");
+          }
+          messages[ii].markRead();
+          messages[ii].moveToTrash();
         }
-        messages[ii].markRead();
-        messages[ii].moveToTrash();
- 
       }
     }
+  } catch (err) {
+      console.error('for loop error: ' + e);
   }
 }
+
 ```
 
 7、点击保存，在弹出的对话框中输出你要显示的名称，例如：autoReplier。再单击“调试”会提示你授权，你按提示授权即可。授权完后会提示没有找到文件之类的，不用管。
